@@ -51,9 +51,8 @@ class IbanValidator extends TranslatedValidator<String> {
   bool isIBAN(String value) {
     final String iban = value.replaceAll(' ', '').toUpperCase();
 
-    if (iban.length < 15 || !regex.hasMatch(iban)) {
-      return false;
-    }
+    if (iban.length < 15) return false;
+    if (!regex.hasMatch(iban)) return false;
 
     final String rearranged = iban.substring(4) + iban.substring(0, 4);
     final String numericIban = rearranged.split('').map((String char) {
@@ -78,7 +77,7 @@ class IbanValidator extends TranslatedValidator<String> {
       }
 
       return remainder == 1;
-    } on FormatException {
+    } catch (e) {
       return false;
     }
   }
