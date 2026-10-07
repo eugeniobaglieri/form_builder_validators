@@ -51,7 +51,7 @@ class IbanValidator extends TranslatedValidator<String> {
   bool isIBAN(String value) {
     final String iban = value.replaceAll(' ', '').toUpperCase();
 
-    if (iban.length < 15) {
+    if (iban.length < 15 || !regex.hasMatch(iban)) {
       return false;
     }
 
@@ -63,19 +63,23 @@ class IbanValidator extends TranslatedValidator<String> {
           : char;
     }).join();
 
-    int remainder = int.parse(numericIban.substring(0, 9)) % 97;
-    for (int i = 9; i < numericIban.length; i += 7) {
-      remainder =
-          int.parse(
-            remainder.toString() +
-                numericIban.substring(
-                  i,
-                  i + 7 < numericIban.length ? i + 7 : numericIban.length,
-                ),
-          ) %
-          97;
-    }
+    try {
+      int remainder = int.parse(numericIban.substring(0, 9)) % 97;
+      for (int i = 9; i < numericIban.length; i += 7) {
+        remainder =
+            int.parse(
+              remainder.toString() +
+                  numericIban.substring(
+                    i,
+                    i + 7 < numericIban.length ? i + 7 : numericIban.length,
+                  ),
+            ) %
+            97;
+      }
 
-    return remainder == 1;
+      return remainder == 1;
+    } on FormatException {
+      return false;
+    }
   }
 }
